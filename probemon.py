@@ -48,12 +48,12 @@ def signal_handler(procs, signal, frame):
 
 def packet_callback(packet):
     if not packet.haslayer(Dot11):
-     return
+        return
 
     # we are looking for management frames with a probe subtype
     # if neither match we are done here
     if packet.type != 0 or packet.subtype != 0x04:
-     return
+        return
 
     # list of output fields
     fields = []
@@ -64,24 +64,24 @@ def packet_callback(packet):
     # parse mac address and look up the organization from the vendor octets
     
     try:
-     parsed_mac = netaddr.EUI(packet.addr2)
-     fields.append(parsed_mac.oui.registration().org)
+        parsed_mac = netaddr.EUI(packet.addr2)
+        fields.append(parsed_mac.oui.registration().org)
     except netaddr.core.NotRegisteredError as e:
-     fields.append('UNKNOWN')
+        fields.append('UNKNOWN')
 
     # include the SSID in the probe frame
     fields.append(packet.info)
     
     # signal strength in dbm
     try:
-     fields.append(packet.dBm_AntSignal)
+        fields.append(packet.dBm_AntSignal)
     except Exception as e:
-     logger.error(e)
+        logger.error(e)
     
     try:
-     fields.append(packet.Channel)
+        fields.append(packet.Channel)
     except Exception as e:
-     logger.error(e)
+        logger.error(e)
 
     logger.info('\t'.join(map(str,fields)))
 
@@ -94,8 +94,8 @@ def main():
     args = parser.parse_args()
 
     if not args.interface:
-     print("error: at least one capture interface required, try --help")
-     sys.exit(-1)
+        print("error: at least one capture interface required, try --help")
+        sys.exit(-1)
 
     # Start the channel hopper
 
@@ -115,7 +115,7 @@ def main():
     # Capture CTRL-C
     signal_handler_func = partial(signal_handler, procs)
     signal.signal(signal.SIGINT, signal_handler_func)
-    
+
 
 if __name__ == '__main__':
     main()
